@@ -72,7 +72,6 @@ int runClient(const char* IP) {
     }
 
     std::cout << "Connected to server!" << std::endl;
-    std::cout << "Type '/help' for command list" << std::endl;
 
     std::thread receiver(receive_thread, clientSocket);
 
