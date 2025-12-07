@@ -1,5 +1,8 @@
 #include <string>
 #pragma once
 
-int runClient(const char* IP);
+class ClientListener {
+public:
+	int runClient(const std::string& IP);
+};
 std::string validateIP(std::string ip);

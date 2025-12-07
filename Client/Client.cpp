@@ -9,6 +9,7 @@
 #include <atomic>
 
 
+
 std::atomic<bool> running{ true };
 
 void receive_thread(net_utils::socket_t server_socket) {
@@ -26,8 +27,8 @@ void receive_thread(net_utils::socket_t server_socket) {
     }
 }
 
-int runClient(const char* IP) {
 
+net_utils::socket_t connectToServer(std::string IP) {
     #ifdef _WIN32
     // Устанавливаем UTF-8 для консоли Windows
     SetConsoleOutputCP(CP_UTF8);
@@ -60,7 +61,7 @@ int runClient(const char* IP) {
     memset(&server_addr, 0, sizeof(server_addr));
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(12345);
-    inet_pton(AF_INET, IP, &server_addr.sin_addr);
+    inet_pton(AF_INET, IP.c_str(), &server_addr.sin_addr);
 
 
     // Подключаемся к серверу
@@ -70,40 +71,15 @@ int runClient(const char* IP) {
         net_utils::net_cleanup();
         return 1;
     }
+    return clientSocket;
+}
+
+
+int ClientListener::runClient(const std::string& IP) {
 
     std::cout << "Connected to server!" << std::endl;
-
+    net_utils::socket_t clientSocket = connectToServer(IP);
     std::thread receiver(receive_thread, clientSocket);
-
-    // Отправляем сообщение
-    //std::string message;
-    //std::cout << "Enter a message for server: ";
-    //std::getline(std::cin, message);
-
-    //int sent = net_utils::send(clientSocket, message);
-
-    //if (sent <= 0) {
-    //    std::cerr << "Error sending: " << net_utils::get_last_error() << std::endl;
-    //}
-    //else {
-    //    std::cout << "Sent " << sent << " bytes" << std::endl;
-    //}
-
-    //// Читаем ответ
-    //std::string buffer = net_utils::read(clientSocket);
-    //int bytesRead = buffer.size();
-
-    //if (bytesRead > 0) {
-    //    buffer[bytesRead] = '\0'; // Гарантируем нулевое завершение строки
-    //    std::cout << "Listened from server (" << bytesRead << " bytes): " << buffer << std::endl;
-    //}
-    //else if (bytesRead == 0) {
-    //    std::cout << "Server disconnected" << std::endl;
-    //}
-    //else {
-    //    std::cerr << "Read error: " << net_utils::get_last_error() << std::endl;
-    //}
-
 
     std::string input;
     while (running) {
@@ -144,7 +120,7 @@ int runClient(const char* IP) {
 }
 
 std::string validateIP(std::string ip) {
-    if (ip == "localhost") ip = "127.0.0.1";
+    if (ip == "localhost" || ip.empty()) return "127.0.0.1";
     std::stringstream ss(ip);
     std::string segment;
     std::vector<std::string> parts;
@@ -159,3 +135,4 @@ std::string validateIP(std::string ip) {
     }
     return ip;
 }
+

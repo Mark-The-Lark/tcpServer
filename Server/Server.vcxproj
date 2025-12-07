@@ -198,9 +198,11 @@
   <ItemGroup>
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ServerUDP.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Server.h" />
+    <ClInclude Include="ServerUDP.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.vcxproj">
